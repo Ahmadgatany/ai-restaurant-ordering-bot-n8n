@@ -21,28 +21,40 @@ This project demonstrates how to design a reliable, stateful conversational syst
 
 ## 🧠 Architecture Overview
 
-The workflow is designed as a multi-stage pipeline:
+The workflow is designed as a **state-aware, multi-stage pipeline** that separates concerns clearly and avoids common LLM automation pitfalls.
 
 1. **Telegram Trigger**
    - Receives incoming user messages.
+   - Extracts `telegram_id` for consistent user identification.
 
 2. **Customer Lookup (Google Sheets)**
-   - Checks if the Telegram ID already exists.
+   - Checks if the user already exists using `telegram_id`.
+   - Routes the flow based on customer existence (new vs returning).
 
 3. **Customer Info Collection (LLM)**
-   - Collects name and phone number for new users only.
-   - Prevents repeated data requests.
+   - Activated only for new users.
+   - Collects name and phone number.
+   - Uses strict conditions to prevent repeated or unnecessary questions.
 
 4. **Menu & Order Handling (LLM)**
-   - Shows menu on request.
-   - Extracts selected dish, price, and sandwich flag.
-   - Confirms the order before final submission.
+   - Menu is shown **only when explicitly requested**.
+   - Orders are extracted from natural Arabic language.
+   - AI output is strictly structured (JSON) to ensure safe automation.
+   - Prevents ambiguous states and infinite confirmation loops.
 
-5. **Order Storage**
-   - Saves confirmed orders into Google Sheets.
+5. **Conditional Logic & State Control**
+   - IF nodes ensure correct routing based on intent:
+     - `order_started`
+     - `order_confirmed`
+   - Guarantees deterministic behavior across the conversation.
 
-6. **Telegram Response**
-   - Sends user-friendly confirmations and prompts.
+6. **Order Storage**
+   - Confirmed orders are stored in Google Sheets.
+   - Ensures data consistency and traceability.
+
+7. **Telegram Response**
+   - Sends clear confirmations and next-step prompts.
+   - Keeps the user experience simple and guided.
 
 ---
 
@@ -88,4 +100,6 @@ AI / Automation Engineer
 
 ## 📎 Preview
 
-> A visual representation of the workflow is included to show the full logic and routing.
+A visual overview of the full n8n workflow, showing routing logic, LLM nodes, and integrations:
+
+![Workflow Preview](assets/workflow.png)
