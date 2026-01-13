@@ -1,0 +1,801 @@
+{
+  "name": "AI Bot Orders",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "meta-llama/llama-3.3-70b-instruct:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        -144
+      ],
+      "id": "fcb43e22-5897-4859-afd3-d4bbc37a26fb",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "kXKnRhOGPeTfyLsx",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -864,
+        -144
+      ],
+      "id": "04ba7439-183c-4d69-ae6d-c4bc8da33975",
+      "name": "Telegram Trigger",
+      "webhookId": "2a1763c9-23f5-457f-8d70-8b26c3d4e29e",
+      "credentials": {
+        "telegramApi": {
+          "id": "8J3Jf6ngVotXsHFI",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        256,
+        -176
+      ],
+      "id": "7d7397b3-5f96-4754-ae9e-62b939587a3f",
+      "name": "Send a text message",
+      "webhookId": "2767ed69-a786-48ab-930e-2a4a0da7f5b8",
+      "credentials": {
+        "telegramApi": {
+          "id": "8J3Jf6ngVotXsHFI",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"intent\": \"string\",\n  \"message\": \"string or null\",\n  \"dish_name\": \"string or null\",\n  \"price\": \"number or null\",\n  \"is_sandwich\": \"boolean or null\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        -144
+      ],
+      "id": "6934c030-b062-48be-a06e-9e8f63f25319",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4e614e1c-61b4-48bd-8403-790f161b26b1",
+              "leftValue": "={{ $json.output.is_sandwich }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        32,
+        -320
+      ],
+      "id": "3086df60-177f-4be9-b399-5fdd0ffb7ea1",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $('Basic LLM Chain — Menu & Order').item.json.output.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        -352
+      ],
+      "id": "b72c950b-c512-4772-9c56-1244741c7f47",
+      "name": "Send a text message1",
+      "webhookId": "2767ed69-a786-48ab-930e-2a4a0da7f5b8",
+      "credentials": {
+        "telegramApi": {
+          "id": "8J3Jf6ngVotXsHFI",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f1f8865e-54ac-4520-ae63-bd5e0140f764",
+              "leftValue": "={{ $json.row_number }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -528,
+        -144
+      ],
+      "id": "8266534c-ce80-435b-b2e5-13c080559a90",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "model": "mistralai/mistral-small-3.1-24b-instruct:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        144
+      ],
+      "id": "205defea-ffc9-4516-b291-679a8851a819",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "kXKnRhOGPeTfyLsx",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "={\n  \"type\": \"object\",\n  \"properties\": {\n    \"intent\": {\n      \"type\": \"string\",\n      \"enum\": [\"greeting\",\"collect_customer_info\",\"menu_request\",\"dish_selected\",\"order_confirmed\"]\n    },\n    \"message\": {\"type\":\"string\"},\n    \"customer_name\": {\"type\":[\"string\",\"null\"]},\n    \"phone_number\": {\"type\":[\"string\",\"null\"]},\n    \"dish_name\": {\"type\":[\"string\",\"null\"]},\n    \"price\": {\"type\":[\"string\",\"null\"]},\n    \"is_sandwich\": {\"type\":[\"boolean\",\"null\"]}\n  },\n  \"required\":[\"intent\",\"message\"],\n  \"if\": {\n    \"properties\": { \"intent\": { \"const\": \"collect_customer_info\" } }\n  },\n  \"then\": {\n    \"required\": [\"customer_name\",\"phone_number\"]\n  }\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        144
+      ],
+      "id": "4c8e4a6c-eba9-423b-8027-b6460222b886",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.Reply_message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        512,
+        -32
+      ],
+      "id": "468bb319-3a0e-4f7f-ba20-993931494610",
+      "name": "Send a text message2",
+      "webhookId": "2767ed69-a786-48ab-930e-2a4a0da7f5b8",
+      "credentials": {
+        "telegramApi": {
+          "id": "8J3Jf6ngVotXsHFI",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a focused data-collection assistant for a restaurant ordering system.\n\nYour ONLY task in this step is to collect the customer's NAME and PHONE NUMBER.\nYou are NOT allowed to invent, assume, or guess any name or phone number.\n\nLANGUAGE RULE (CRITICAL):\n- Detect the language of the user's message.\n- ALWAYS respond in the SAME language as the user (Arabic or English).\n- Do NOT switch languages.\n- Do NOT use example names like \"Ahmed\", \"John\", or any personal names unless the USER explicitly provided them.\n\nBEHAVIOR RULES:\n- If the user provides BOTH name and phone number in their message:\n  - Extract them exactly as written by the user.\n  - Return intent = \"collect_customer_info\".\n- If ONE of them is missing:\n  - Ask ONLY for the missing field.\n  - Do NOT mention food, menu, or ordering.\n- If BOTH are missing:\n  - Politely ask for name and phone number.\n- NEVER show the menu in this step.\n- NEVER ask about dishes in this step.\n\nPHONE VALIDATION (light):\n- Accept formats like:\n  - 011xxxxxxxx\n  - 010xxxxxxxx\n  - +2010xxxxxxxx\n  - Digits with spaces or dashes\n- If the phone number looks invalid:\n  - Ask the user to retype it in a common phone format.\n  - Do NOT store it.\n\nOUTPUT RULES (STRICT):\n- ALWAYS return VALID JSON ONLY.\n- No explanations, no markdown, no extra text.\n- Required fields:\n  - \"intent\"\n  - \"message\"\n- Optional fields:\n  - \"customer_name\"\n  - \"phone_number\"\n- Only fill \"customer_name\" or \"phone_number\" if the USER explicitly provided them.\n- Otherwise, set them to null.\n- All dish-related fields MUST always be null in this step.\n\nSAFE FALLBACK (use only if unsure):\n{\"intent\":\"collect_customer_info\",\"message\":\"من فضلك، ممكن اسمك ورقم الهاتف؟\",\"customer_name\":null,\"phone_number\":null,\"dish_name\":null,\"price\":null,\"is_sandwich\":null}\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.8,
+      "position": [
+        -384,
+        -16
+      ],
+      "id": "690a6c27-cce8-4c7d-9a11-59c88104a388",
+      "name": "Basic LLM Chain — Collect Info"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Telegram Trigger').item.json.message.text }}",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=You are a professional restaurant ordering assistant used in an automated chat system.\n\nYour role:\n- Understand the user's food-related messages in natural Arabic.\n- Help the user browse the menu and place an order.\n- Extract order information accurately and return it as structured JSON.\n- Respond politely, clearly, and naturally in Arabic.\n\nIMPORTANT CONTEXT:\n- The customer's name and phone number are ALREADY confirmed.\n- You MUST NOT ask for the customer's name or phone number.\n- You MUST NOT re-confirm customer information.\n\n────────────────────────\nMENU:\n- شاورما فراخ — 50 جنيه — Sandwich\n- شاورما لحمة — 65 جنيه — Sandwich\n- برجر لحم — 80 جنيه — Sandwich\n- بيتزا مارجريتا — 90 جنيه — Not sandwich\n\n────────────────────────\nINTENTS (use EXACT strings):\n- \"menu_request\"     → user asks to see the menu or available options\n- \"order_started\"    → user clearly orders ONE dish from the menu\n- \"order_confirmed\"  → user confirms the order (e.g. \"أكد\", \"تمام\", \"ثبت الطلب\")\n\n────────────────────────\nBEHAVIOR RULES:\n1) Show the menu ONLY when the user explicitly asks for it.\n2) If the user orders a dish:\n   - Extract the dish name, price, and sandwich status.\n   - Set intent = \"order_started\".\n3) If the user confirms the order:\n   - Set intent = \"order_confirmed\".\n4) If the user message is unclear or ambiguous:\n   - Ask a short clarification question in the message.\n5) NEVER invent dishes, prices, or categories outside the menu.\n\n────────────────────────\nOUTPUT RULES (STRICT):\n- ALWAYS return VALID JSON ONLY.\n- No extra text, no markdown, no explanations.\n\nREQUIRED FIELDS (ALWAYS PRESENT):\n- intent\n- message\n- dish_name\n- price\n- is_sandwich\n\nFIELD RULES:\n- The \"message\" field MUST ALWAYS be a non-empty string.\n- \"message\" MUST NEVER be null.\n\n- When intent = \"menu_request\":\n  - message MUST contain the menu in a short, clear format.\n  - dish_name, price, is_sandwich MUST be null.\n\n- When intent = \"order_started\":\n  - message MUST:\n    • Confirm the selected dish and its price\n    • Ask the user to confirm the order\n  - dish_name MUST be the exact Arabic dish name from the menu.\n  - price MUST be the numeric price.\n  - is_sandwich MUST be true or false.\n\n- When intent = \"order_confirmed\":\n  - message MUST clearly confirm that the order is finalized.\n  - dish_name, price, is_sandwich MUST reflect the confirmed dish.\n\n- If any field is unknown:\n  - Set it to null (EXCEPT \"message\").\n\n────────────────────────\nFAILSAFE:\nIf you cannot follow these instructions, return EXACTLY:\n\n{\n  \"intent\": \"menu_request\",\n  \"message\": \"تحب تشوف المنيو الأول؟\",\n  \"dish_name\": null,\n  \"price\": null,\n  \"is_sandwich\": null\n}\n"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.8,
+      "position": [
+        -304,
+        -320
+      ],
+      "id": "6cc427a2-36e9-4388-ade7-92ccb2ebb70a",
+      "name": "Basic LLM Chain — Menu & Order"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY",
+          "mode": "list",
+          "cachedResultName": "Salt3 Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Telegram_id",
+              "lookupValue": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -704,
+        -144
+      ],
+      "id": "f10cafa0-6f3e-489f-8985-df5774e74d25",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "87gCcCzMmicDZzxt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "37b15a27-ef6b-42fc-be9f-52d173c9c58f",
+              "leftValue": "={{ $json.output.customer_name }}",
+              "rightValue": "\"null\"",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b89b50dd-9747-444b-9a32-d5890082c48e",
+              "leftValue": "={{ $json.output.phone_number }}",
+              "rightValue": "\"null\"",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -80,
+        -16
+      ],
+      "id": "8c85d10d-53b9-4205-b931-2dfde3a204b5",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        112
+      ],
+      "id": "05854663-b9bc-4d55-a8b6-db7961b884c8",
+      "name": "Send a text message3",
+      "webhookId": "2767ed69-a786-48ab-930e-2a4a0da7f5b8",
+      "credentials": {
+        "telegramApi": {
+          "id": "8J3Jf6ngVotXsHFI",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY",
+          "mode": "list",
+          "cachedResultName": "Salt3 Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.output.customer_name }}",
+            "Order ": "=",
+            "Phone_number": "={{ $json.output.phone_number }}",
+            "Price": "=",
+            "Telegram_id": "={{ $('Telegram Trigger').item.json.message.from.id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone_number",
+              "displayName": "Phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Order ",
+              "displayName": "Order ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telegram_id",
+              "displayName": "Telegram_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        144,
+        -32
+      ],
+      "id": "c384a270-9e06-42dd-a0c4-ffd55ec103cb",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "87gCcCzMmicDZzxt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ddcdd8ec-b767-44a5-b49c-d5e31d7f715c",
+              "name": "Reply_message",
+              "value": "={{  \"تمام يا \" + $json.Name\n+  \" ✅\\nتم تسجيل رقمك: \" + $json.Phone_number +  \"\\n\\nتحب تطلب إيه؟\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        336,
+        -32
+      ],
+      "id": "cb523bee-4db4-47f6-8164-097b20d76211",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY",
+          "mode": "list",
+          "cachedResultName": "Salt3 Orders",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1XRSQRxBNRlnQx6NkNl1Ii3h6UiMWQg51ypDcN6A6XLY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Price": "={{ $('Basic LLM Chain — Menu & Order').item.json.output.price }}",
+            "Order ": "={{ $('Basic LLM Chain — Menu & Order').item.json.output.dish_name }}",
+            "Telegram_id": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+          },
+          "matchingColumns": [
+            "Telegram_id"
+          ],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone_number",
+              "displayName": "Phone_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Order ",
+              "displayName": "Order ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price",
+              "displayName": "Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telegram_id",
+              "displayName": "Telegram_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        240,
+        -368
+      ],
+      "id": "0d9b0c1e-5986-44f3-a059-980f71dcf558",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "87gCcCzMmicDZzxt",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain — Menu & Order",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain — Menu & Order",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain — Menu & Order",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain — Collect Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain — Collect Info",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain — Collect Info",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain — Collect Info": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain — Menu & Order": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "5adef00e-6f8e-4689-87e4-7246e403ce2f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8eb04b22de4f72996dd80ce65ea32d1dd4f74dfa3a54c8ac0db145af4c93104d"
+  },
+  "id": "WmbsQSrb4u0arfgs",
+  "tags": []
+}
