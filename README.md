@@ -78,10 +78,14 @@ The workflow is designed as a **state-aware, multi-stage pipeline** that separat
 
 ---
 
-## 🔐 Security Notes
+## 🔐 Security & Setup Notes
 
-- No API keys or credentials are included in this repository.
-- All secrets (Telegram token, OpenRouter API key, Google credentials) are managed securely via n8n Credentials.
+- No credentials or API keys are included in this repository.
+- To use this workflow, you must configure your own credentials in n8n:
+  - Telegram Bot Token
+  - OpenRouter API Key
+  - Google Sheets (OAuth or Service Account)
+- All sensitive information is securely handled through **n8n Credentials** and is never embedded in the exported workflow.
 
 ---
 
